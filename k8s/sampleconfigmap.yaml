@@ -1,0 +1,112 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: qualys-cloud-agent
+  namespace: qualys-qca
+data:
+  install.sh: |
+    #!/bin/bash
+
+    # Update and install packages
+    #set -eux
+    #Check Kubernetes Node OS for QCA Compatibility.
+    # https://www.qualys.com/docs/qualys-cloud-agent-getting-started-guide.pdf -- OS Compatibility Matrix
+    #------------------------------
+
+    #Customize Agent Installer Location
+    AgentLocationDebian="https://qca-installer-binary-debian-URL"
+    AgentLocationRPM="https://qca-installer-binary-RPM-URL"
+    AgentLocationDebianArm="https://qca-installer-binary-debian-ARM-URL"
+    AgentLocationRPMArm="https://qca-installer-binary-RPM-ARM-URL"
+    # ------------------------------
+
+    #Customize deployment config from your Qualys Subscription
+    ActivationID="QCA-ActivationId"
+    CustomerID="QCA-CustomerId"
+    # Use the ServerUri value from https://www.qualys.com/platform-identification/ under Cloud Agent server
+    # with example format "https://qagpublic.qg1.apps.qualys.com/CloudAgent/"
+    ServerUri="https://<Qualys-Subscription-URL>/CloudAgent/"
+    #-------------------------------
+
+    #Set logging level
+    LogLevel="5"
+    #-------------------------------
+
+    #Check Whether the Qualys Cloud Agent is already installed
+    status=$( sudo service qualys-cloud-agent status | grep Active )
+    if [[ -z "$status" ]];
+    then
+         # Check whether curl or wget is present in the system
+         if hash curl 2>/dev/null
+         then
+             DOWNLOAD_CMD="sudo curl -s --fail --retry 5 --max-time 30"
+             CONSOLE_ARG=""
+             TO_FILE_ARG=" -o "
+             HEADER_ARG=" --head "
+         else
+             DOWNLOAD_CMD="sudo wget --quiet --tries=5 --timeout=30 "
+             CONSOLE_ARG=" -qO- "
+             TO_FILE_ARG=" -O "
+             HEADER_ARG=" -S --spider "
+         fi
+         # Check whether the OS is Debian or RPM based Linux and set the download location
+         os=$( grep -Ei 'debian|buntu|mint' /etc/*release )
+         arch=$( uname -m )
+         if [[ -n "$os" || -f "/etc/debian_version" ]];
+         then
+             if [[ $arch = "x86_64" ]];
+             then
+                  INSTALLER_FILE_URL=${AgentLocationDebian}
+                  opersys="DEB"
+             else
+                  INSTALLER_FILE_URL=${AgentLocationDebianArm}
+                  opersys="DEB"
+             fi
+         else
+             if [[ $arch = "x86_64" ]];
+             then
+                  INSTALLER_FILE_URL=${AgentLocationRPM}
+                  opersys="RPM"
+             else
+                  INSTALLER_FILE_URL=${AgentLocationRPMArm}
+                  opersys="RPM"
+             fi
+         fi
+         Downloadfile()
+         {
+             ${DOWNLOAD_CMD} ${TO_FILE_ARG} qualys-cloud-agent.x86_64 ${INSTALLER_FILE_URL}
+             if [[ $? != 0 ]];
+             then
+                 echo "Failed to download installer from ${INSTALLER_FILE_URL}"
+                 exit 3
+             fi
+         }
+         # Checks whether agent location is a FQDN or full path and invoke download or copy function
+         if [[ -n "$INSTALLER_FILE_URL" ]];
+         then
+             if [[ "${INSTALLER_FILE_URL:0:4}" == 'http' ]] ;
+             then
+                     Downloadfile
+             else
+                 cp $INSTALLER_FILE_URL qualys-cloud-agent.x86_64
+             fi
+         else
+             echo "No installation path specified for Qualys Cloud Agent"
+                 exit 4
+         fi
+         if [ "$opersys" = "RPM" ];
+         then
+                sudo rpm -ivh qualys-cloud-agent.x86_64
+                sleep 5
+                sudo /usr/local/qualys/cloud-agent/bin/qualys-cloud-agent.sh LogLevel=${LogLevel} ActivationId=${ActivationID} CustomerId=${CustomerID} ServerUri=${ServerUri}
+         else
+             sudo dpkg --install qualys-cloud-agent.x86_64
+             sleep 5
+             sudo /usr/local/qualys/cloud-agent/bin/qualys-cloud-agent.sh LogLevel=${LogLevel} ActivationId=${ActivationID} CustomerId=${CustomerID} ServerUri=${ServerUri}
+
+
+
+         fi
+    else
+    echo "If check failed - QualysCloudAgent is already installed on this and running"
+    fi

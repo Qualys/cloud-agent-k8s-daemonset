@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: qualys-qca
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: qca-bootstrap
+  namespace: qualys-qca
+spec:
+  selector:
+    matchLabels:
+      job: qca-bootstrap
+  template:
+    metadata:
+      labels:
+        job: qca-bootstrap
+    spec:
+      hostPID: true
+      restartPolicy: Always
+      containers:
+      - image: qualyssa/qca-k8s-bootstrap:latest
+        name: qualys-cloud-agent
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: install-script
+          mountPath: /tmp
+        - name: host-mount
+          mountPath: /host
+      volumes:
+      - name: install-script
+        configMap:
+          name: qualys-cloud-agent
+      - name: host-mount
+        hostPath:
+          path: /tmp/install
