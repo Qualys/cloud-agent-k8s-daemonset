@@ -4,6 +4,8 @@ Many customers want the ability to to boot strap K8S worker nodes with agents su
 
 ## Configuration
 
+In ./k8s/sampleconfigmap.yaml
+
 *Customize Agent Installer Location*
 
 Set your own Qualys Cloud Agent source
@@ -32,6 +34,14 @@ ServerUri="https://<Qualys-Subscription-URL>/CloudAgent/"
 *Set logging level*
 ```
 LogLevel="5"
+```
+
+In ./k8s/daemonset.yaml
+
+*Set image location
+
+```
+image: qualyssa/qca-k8s-bootstrap:latest
 ```
 
 ## Installation
