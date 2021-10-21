@@ -5,17 +5,24 @@ Many customers want the ability to to boot strap K8S worker nodes with agents su
 ## Configuration
 
 *Customize Agent Installer Location*
+
 Set your own Qualys Cloud Agent source or use the Qualys provided installers
 AgentLocationDebian="https://qca-installer-binary-debian-URL"
+
 AgentLocationRPM="https://qca-installer-binary-RPM-URL"
+
 AgentLocationDebianArm="https://qca-installer-binary-debian-ARM-URL"
+
 AgentLocationRPMArm="https://qca-installer-binary-RPM-ARM-URL"
 
 *Customize deployment config from your Qualys Subscription*
+
 ActivationID="QCA-ActivationId"
+
 CustomerID="QCA-CustomerId"
 
 Use the ServerUri value from https://www.qualys.com/platform-identification/ under Cloud Agent server with example format "https://qagpublic.qg1.apps.qualys.com/CloudAgent/"
+
 ServerUri="https://<Qualys-Subscription-URL>/CloudAgent/"
 
 *Set logging level*
