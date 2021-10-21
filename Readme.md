@@ -6,7 +6,7 @@ Many customers want the ability to to boot strap K8S worker nodes with agents su
 
 *Customize Agent Installer Location*
 
-Set your own Qualys Cloud Agent source or use the Qualys provided installers
+Set your own Qualys Cloud Agent source
 ```
 AgentLocationDebian="https://qca-installer-binary-debian-URL"
 
