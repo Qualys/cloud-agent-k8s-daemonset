@@ -1,5 +1,9 @@
 # cloud-agent-k8s-daemonset
 
+## License
+## THIS SCRIPT IS PROVIDED TO YOU "AS IS." TO THE EXTENT PERMITTED BY LAW, QUALYS HEREBY DISCLAIMS ALL WARRANTIES AND LIABILITY FOR THE PROVISION OR USE OF THIS SCRIPT. IN NO EVENT SHALL THESE SCRIPTS BE DEEMED TO BE CLOUD SERVICES AS PROVIDED BY QUALYS
+
+
 Many customers want the ability to to boot strap K8S worker nodes with agents such as Qualys Cloud Agent. This script which is heavily inspired by [patnaikshekhar](https://github.com/patnaikshekhar/AKSNodeInstaller) lets you do that. The script is made available to all nodes via a config map and then in the container, install.sh is executed. This executes as a DaemonSet and is run on existing and new nodes. After the installation, the container will sleep infinity.
 
 ## Configuration
