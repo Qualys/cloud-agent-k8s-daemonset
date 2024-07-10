@@ -45,7 +45,7 @@ In ./k8s/daemonset.yaml
 *Set image location
 
 ```
-image: qualyssa/qca-k8s-bootstrap:latest
+image: qualys/qca-k8s-bootstrap:latest
 ```
 
 ## Installation
