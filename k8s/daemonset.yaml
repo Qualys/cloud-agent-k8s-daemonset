@@ -20,7 +20,7 @@ spec:
       hostPID: true
       restartPolicy: Always
       containers:
-      - image: qualyssa/qca-k8s-bootstrap:latest
+      - image: qualys/qca-k8s-bootstrap:latest
         name: qualys-cloud-agent
         securityContext:
           privileged: true
